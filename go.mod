@@ -1,6 +1,8 @@
 module github.com/community-terraform-providers/terraform-provider-ignition/v2
 
-go 1.20
+go 1.23
+
+toolchain go1.23.4
 
 require (
 	github.com/coreos/ignition/v2 v2.20.0
