@@ -54,6 +54,27 @@ func dataSourceDisk() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
+						"guid": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"wipe_partition_entry": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							ForceNew: true,
+						},
+						"should_exist": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							ForceNew: true,
+							Default:  true,
+						},
+						"resize": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							ForceNew: true,
+						},
 					},
 				},
 			},
@@ -112,7 +133,22 @@ func buildDisk(d *schema.ResourceData) (string, error) {
 			p.StartMiB = &tstart
 		}
 		tguid := v["type_guid"].(string)
-		p.TypeGUID = &tguid
+		if tguid != "" {
+			p.TypeGUID = &tguid
+		}
+		guid := v["guid"].(string)
+		if guid != "" {
+			p.GUID = &guid
+		}
+		if wipePE, ok := v["wipe_partition_entry"].(bool); ok {
+			p.WipePartitionEntry = &wipePE
+		}
+		if shouldExist, ok := v["should_exist"].(bool); ok {
+			p.ShouldExist = &shouldExist
+		}
+		if resize, ok := v["resize"].(bool); ok {
+			p.Resize = &resize
+		}
 
 		disk.Partitions = append(disk.Partitions, p)
 	}

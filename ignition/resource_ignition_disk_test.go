@@ -17,6 +17,9 @@ func TestIgnitionDisk(t *testing.T) {
 				sizemib = 42
 				startmib = 2048
 				type_guid = "01234567-89AB-CDEF-EDCB-A98765432101"
+				guid = "01234567-89AB-CDEF-EDCB-A98765432101"
+				wipe_partition_entry = true
+				resize = true
 			}
 		}
 
@@ -52,6 +55,22 @@ func TestIgnitionDisk(t *testing.T) {
 
 		if string(*p.TypeGUID) != "01234567-89AB-CDEF-EDCB-A98765432101" {
 			return fmt.Errorf("partition.0.type_guid, found %q", *p.TypeGUID)
+		}
+
+		if string(*p.GUID) != "01234567-89AB-CDEF-EDCB-A98765432101" {
+			return fmt.Errorf("partition.0.guid, found %q", *p.GUID)
+		}
+
+		if *p.WipePartitionEntry != true {
+			return fmt.Errorf("wipe_partition_entry, found %t", *p.WipePartitionEntry)
+		}
+
+		if *p.ShouldExist != true {
+			return fmt.Errorf("should_exist, found %t", *p.ShouldExist)
+		}
+
+		if *p.Resize != true {
+			return fmt.Errorf("resize, found %t", *p.Resize)
 		}
 
 		return nil
@@ -92,4 +111,19 @@ func TestIgnitionDiskInvalidPartition(t *testing.T) {
 			disks = [data.ignition_disk.foo.rendered]
 		}
 	`, regexp.MustCompile("overlap"))
+}
+
+func TestIgnitionDiskInvalidShouldExist(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_disk" "foo" {
+			device = "/foo"
+			partition {
+				should_exist = false
+			}
+		}
+
+		data "ignition_config" "test" {
+			disks = [data.ignition_disk.foo.rendered]
+		}
+	`, regexp.MustCompile("has start or size 0"))
 }

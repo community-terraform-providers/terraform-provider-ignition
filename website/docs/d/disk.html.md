@@ -45,6 +45,14 @@ The `partition` block supports:
 
 * `type_guid` - (Optional) The GPT [partition type GUID](http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs). If omitted, the default will be _0FC63DAF-8483-4772-8E79-3D69D8477DE4_ (Linux filesystem data).
 
+* `guid` - (Optional) The GPT unique partition GUID.
+
+* `wipe_partition_entry` - (Optional) If true, Ignition will clobber an existing partition if it does not match the config. If false (default), Ignition will fail instead.
+
+* `should_exist` - (Optional) Whether or not the partition with the specified number should exist. If omitted, it defaults to true. If false Ignition will either delete the specified partition or fail, depending on wipePartitionEntry. If false number must be specified and non-zero and label, start, size, guid, and typeGuid must all be omitted.
+
+* `resize` - (Optional) Whether or not the existing partition should be resized. If omitted, it defaults to false. If true, Ignition will resize an existing partition if it matches the config in all respects except the partition size.
+
 ## Attributes Reference
 
 The following attributes are exported:
