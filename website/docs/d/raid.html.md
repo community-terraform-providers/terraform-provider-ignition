@@ -57,6 +57,8 @@ The following arguments are supported:
 
 * `spares` - (Optional) The number of spares (if applicable) in the array.
 
+* `options` - (Optional) Any additional options to be passed to mdadm.
+
 ## Attributes Reference
 
 The following attributes are exported:

@@ -15,6 +15,7 @@ func TestIgnitionRaid(t *testing.T) {
 			level = "raid10"
 			devices = ["/foo"]
 			spares = 42
+			options = ["--bitmap=internal"]
 		}
 
 		data "ignition_config" "test" {
@@ -42,6 +43,10 @@ func TestIgnitionRaid(t *testing.T) {
 			return fmt.Errorf("spares, found %q", *a.Spares)
 		}
 
+		if len(a.Options) != 1 || a.Options[0] != "--bitmap=internal" {
+			return fmt.Errorf("options, found %v", a.Devices)
+		}
+
 		return nil
 	})
 }
@@ -58,5 +63,19 @@ func TestIgnitionRaidInvalidLevel(t *testing.T) {
 		data "ignition_config" "test" {
 			arrays = [data.ignition_raid.foo.rendered]
 		}
-	`, regexp.MustCompile("raid level"))
+	`, regexp.MustCompile("unrecognized raid level"))
+}
+
+func TestIgnitionRaidMissingDevices(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_raid" "foo" {
+			name = "foo"
+			level = "foo"
+			spares = 42
+		}
+
+		data "ignition_config" "test" {
+			arrays = [data.ignition_raid.foo.rendered]
+		}
+	`, regexp.MustCompile("is required"))
 }

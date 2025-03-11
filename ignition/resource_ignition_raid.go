@@ -25,7 +25,7 @@ func dataSourceRaid() *schema.Resource {
 			},
 			"devices": {
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
 				ForceNew: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
@@ -33,6 +33,12 @@ func dataSourceRaid() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				ForceNew: true,
+			},
+			"options": {
+				Type:     schema.TypeList,
+				Optional: true,
+				ForceNew: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"rendered": {
 				Type:     schema.TypeString,
@@ -79,6 +85,10 @@ func buildRaid(d *schema.ResourceData) (string, error) {
 
 	if err := handleReport(raid.Validate(path.ContextPath{})); err != nil {
 		return "", err
+	}
+
+	for _, value := range d.Get("options").([]interface{}) {
+		raid.Options = append(raid.Options, types.RaidOption(value.(string)))
 	}
 
 	b, err := json.Marshal(raid)
