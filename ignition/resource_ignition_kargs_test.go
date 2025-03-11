@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coreos/ignition/v2/config/v3_4/types"
+	"github.com/coreos/ignition/v2/config/v3_5/types"
 )
 
 func TestIgnitionKargs(t *testing.T) {
