@@ -12,8 +12,8 @@ func TestIgnitionFile(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_file" "foo" {
 			path = "/foo"
-			content {
-				content = "foo"
+			contents {
+				source = "data:text/plain;charset=utf-8;base64,${base64encode("foo")}"
 			}
 			mode = 420
 			uid = 42
@@ -22,7 +22,7 @@ func TestIgnitionFile(t *testing.T) {
 
 		data "ignition_file" "qux" {
 			path = "/qux"
-			source {
+			contents {
 				source = "qux"
 				compression = "gzip"
 				verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
@@ -31,7 +31,7 @@ func TestIgnitionFile(t *testing.T) {
 
 		data "ignition_file" "nop" {
 			path = "/nop"
-			source {
+			contents {
 				source = "nop"
 				compression = "gzip"
 			}
@@ -39,7 +39,7 @@ func TestIgnitionFile(t *testing.T) {
 
 		data "ignition_file" "bar" {
 			path = "/bar"
-			source {
+			contents {
 				source = "bar"
 				compression = "gzip"
 			}
@@ -48,12 +48,19 @@ func TestIgnitionFile(t *testing.T) {
 
 		data "ignition_file" "baz" {
 			path = "/baz"
-			source {
+			contents {
 				source = "baz"
 				http_headers {
 					name = "Authorization"
 					value = "Basic token"
 				}
+			}
+		}
+
+		data "ignition_file" "sas" {
+			path = "/sas"
+			contents { 
+				source = "data:,example%20file%0A"
 			}
 		}
 
@@ -64,10 +71,11 @@ func TestIgnitionFile(t *testing.T) {
 				data.ignition_file.nop.rendered,
 				data.ignition_file.bar.rendered,
 				data.ignition_file.baz.rendered,
+				data.ignition_file.sas.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Files) != 5 {
+		if len(c.Storage.Files) != 6 {
 			return fmt.Errorf("arrays, found %d", len(c.Storage.Files))
 		}
 
@@ -172,6 +180,15 @@ func TestIgnitionFile(t *testing.T) {
 			return fmt.Errorf("contents.httpheaders[0].value, found %q", *hds[0].Value)
 		}
 
+		f = c.Storage.Files[5]
+		if f.Path != "/sas" {
+			return fmt.Errorf("path, found %q", f.Path)
+		}
+
+		if *f.Contents.Source != "data:,example%20file%0A" {
+			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
+		}
+
 		return nil
 	})
 }
@@ -181,8 +198,8 @@ func TestIgnitionFileInvalidMode(t *testing.T) {
 		data "ignition_file" "foo" {
 			path = "/foo"
 			mode = 999999
-			content {
-				content = "foo"
+			contents {
+				source = "foo"
 			}
 		}
 
@@ -197,8 +214,8 @@ func TestIgnitionFileInvalidPath(t *testing.T) {
 		data "ignition_file" "foo" {
 			path = "foo"
 			mode = 999999
-			content {
-				content = "foo"
+			contents {
+				source = "foo"
 			}
 		}
 

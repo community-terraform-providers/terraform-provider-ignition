@@ -44,9 +44,11 @@ The following arguments are supported:
 
 * `overwrite` - (Optional) Whether to delete preexisting nodes at the path. Defaults to false.
 
-* `content` - (Optional) Block to provide the file content inline.
+* `contents` - (Optional) Options related to the contents of the file.
 
-* `source` - (Optional) Block to retrieve the file content from a remote location.
+* `content` - (Optional) **Deprecated** Block to provide the file content inline. Use contents.source instead eg: "data:text/plain;charset=utf-8;base64,${base64encode("foo")}".
+
+* `source` - (Optional) **Deprecated** Block to retrieve the file content from a remote location. Use contents instead.
 
 	__Note__: `content` and `source` are mutually exclusive.
 
@@ -55,6 +57,16 @@ The following arguments are supported:
 * `uid` - (Optional) The user ID of the owner.
 
 * `gid` - (Optional) The group ID of the owner.
+
+The `contents` block supports:
+
+* `source` - (Required) The URL of the file. Supported schemes are http, https, tftp, s3, arn, gs, and [data][rfc2397]. When using http, it is advisable to use the verification option to ensure the contents haven’t been modified.
+
+* `compression` - (Optional) The type of compression used on the file (null or gzip). Compression cannot be used with S3.
+
+* `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is either sha512 or sha256. If compression is specified, the hash describes the decompressed file.
+
+* `http_headers` - (Optional) A  list of HTTP headers to be added to the request. Available for http and https source schemes only.
 
 The `content` block supports:
 

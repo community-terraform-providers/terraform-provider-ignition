@@ -26,11 +26,21 @@ func dataSourceFile() *schema.Resource {
 				ForceNew: true,
 				Default:  false,
 			},
+			"contents": {
+				ConflictsWith: []string{"content", "source"},
+				Type:          schema.TypeList,
+				Optional:      true,
+				ForceNew:      true,
+				MaxItems:      1,
+				Elem:          configReferenceResource,
+			},
 			"content": {
-				Type:     schema.TypeList,
-				Optional: true,
-				ForceNew: true,
-				MaxItems: 1,
+				ConflictsWith: []string{"contents"},
+				Deprecated:    "Use contents.source instead",
+				Type:          schema.TypeList,
+				Optional:      true,
+				ForceNew:      true,
+				MaxItems:      1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"mime": {
@@ -49,11 +59,13 @@ func dataSourceFile() *schema.Resource {
 				},
 			},
 			"source": {
-				Type:     schema.TypeList,
-				Optional: true,
-				ForceNew: true,
-				MaxItems: 1,
-				Elem:     configReferenceResource,
+				ConflictsWith: []string{"contents"},
+				Deprecated:    "Use contents instead",
+				Type:          schema.TypeList,
+				Optional:      true,
+				ForceNew:      true,
+				MaxItems:      1,
+				Elem:          configReferenceResource,
 			},
 			"mode": {
 				Type:     schema.TypeInt,
@@ -99,13 +111,14 @@ func resourceFileExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 
 func buildFile(d *schema.ResourceData) (string, error) {
 	_, hasContent := d.GetOk("content")
+	_, hasContents := d.GetOk("contents")
 	_, hasSource := d.GetOk("source")
-	if hasContent && hasSource {
-		return "", fmt.Errorf("content and source options are incompatible")
+	if (hasContent || hasContents) && hasSource {
+		return "", fmt.Errorf("contents and source options are incompatible")
 	}
 
-	if !hasContent && !hasSource {
-		return "", fmt.Errorf("content or source options must be present")
+	if !(hasContent || hasContents) && !hasSource {
+		return "", fmt.Errorf("contents or source options must be present")
 	}
 
 	var contents types.Resource
@@ -115,6 +128,12 @@ func buildFile(d *schema.ResourceData) (string, error) {
 			d.Get("content.0.content").(string),
 		)
 		contents.Source = &s
+	}
+
+	if hasContents {
+		if err := fillResource(d, &contents, "contents"); err != nil {
+			return "", err
+		}
 	}
 
 	if hasSource {
