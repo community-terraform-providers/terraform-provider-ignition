@@ -54,6 +54,36 @@ type ProviderServer interface {
 	// terraform-plugin-go, so they are their own interface that is composed
 	// into ProviderServer.
 	FunctionServer
+
+	// EphemeralResourceServer is an interface encapsulating all the ephemeral
+	// resource-related RPC requests. ProviderServer implementations must
+	// implement them, but they are a handy interface for defining what an
+	// ephemeral resource is to terraform-plugin-go, so they're their own
+	// interface that is composed into ProviderServer.
+	EphemeralResourceServer
+}
+
+// ProviderServerWithResourceIdentity is a temporary interface for servers
+// to implement Resource Identity RPC handling with:
+//
+// - GetResourceIdentitySchemas
+// - UpgradeResourceIdentity
+//
+// Deprecated: All methods will be moved into the
+// ProviderServer and ResourceServer interfaces and this interface will be removed in a future
+// version.
+type ProviderServerWithResourceIdentity interface {
+	ProviderServer
+
+	// GetResourceIdentitySchemas is called when Terraform needs to know
+	// what the provider's resource identity schemas are.
+	GetResourceIdentitySchemas(context.Context, *GetResourceIdentitySchemasRequest) (*GetResourceIdentitySchemasResponse, error) // This will go into the ProviderServer interface
+
+	// UpgradeResourceIdentity is called when Terraform has encountered a
+	// resource with an identity state in a schema that doesn't match the schema's
+	// current version. It is the provider's responsibility to modify the
+	// identity state to upgrade it to the latest state schema.
+	UpgradeResourceIdentity(context.Context, *UpgradeResourceIdentityRequest) (*UpgradeResourceIdentityResponse, error) // This will go into the ResourceServer interface
 }
 
 // GetMetadataRequest represents a GetMetadata RPC request.
@@ -78,6 +108,9 @@ type GetMetadataResponse struct {
 
 	// Resources returns metadata for all managed resources.
 	Resources []ResourceMetadata
+
+	// EphemeralResources returns metadata for all ephemeral resources.
+	EphemeralResources []EphemeralResourceMetadata
 }
 
 // GetProviderSchemaRequest represents a Terraform RPC request for the
@@ -124,9 +157,36 @@ type GetProviderSchemaResponse struct {
 	// includes the provider name.
 	Functions map[string]*Function
 
+	// EphemeralResourceSchemas is a map of ephemeral resource names to the schema for
+	// the configuration specified in the ephemeral resource. The name should be an
+	// ephemeral resource name, and should be prefixed with your provider's
+	// shortname and an underscore. It should match the first label after
+	// `ephemeral` in a user's configuration.
+	EphemeralResourceSchemas map[string]*Schema
+
 	// Diagnostics report errors or warnings related to returning the
 	// provider's schemas. Returning an empty slice indicates success, with
 	// no errors or warnings generated.
+	Diagnostics []*Diagnostic
+}
+
+// GetResourceIdentitySchemasRequest represents a Terraform RPC request for the
+// provider's resource identity schemas.
+type GetResourceIdentitySchemasRequest struct{}
+
+// GetResourceIdentitySchemasResponse represents a Terraform RPC response containing
+// the provider's resource identity schemas.
+type GetResourceIdentitySchemasResponse struct {
+	// IdentitySchemas is a map of resource names to the schema for the
+	// identity specified for the resource. The name should be a
+	// resource name, and should be prefixed with your provider's shortname
+	// and an underscore. It should match the first label after `resource`
+	// in a user's configuration.
+	IdentitySchemas map[string]*ResourceIdentitySchema
+
+	// Diagnostics report errors or warnings related to returning the
+	// provider's resource identity schemas. Returning an empty slice
+	// indicates success, with no errors or warnings generated.
 	Diagnostics []*Diagnostic
 }
 
