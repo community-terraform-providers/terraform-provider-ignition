@@ -59,9 +59,19 @@ func TestIgnitionFile(t *testing.T) {
 
 		data "ignition_file" "sas" {
 			path = "/sas"
-			contents { 
+			contents {
 				source = "data:,example%20file%0A"
 			}
+		}
+
+		data "ignition_file" "named_foo" {
+			path = "/foo"
+			contents {
+				source = "data:text/plain;charset=utf-8;base64,${base64encode("foo")}"
+			}
+			mode = 420
+			user = "foo"
+			group = "foo"
 		}
 
 		data "ignition_config" "test" {
@@ -72,10 +82,11 @@ func TestIgnitionFile(t *testing.T) {
 				data.ignition_file.bar.rendered,
 				data.ignition_file.baz.rendered,
 				data.ignition_file.sas.rendered,
+				data.ignition_file.named_foo.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Files) != 6 {
+		if len(c.Storage.Files) != 7 {
 			return fmt.Errorf("arrays, found %d", len(c.Storage.Files))
 		}
 
@@ -189,6 +200,31 @@ func TestIgnitionFile(t *testing.T) {
 			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
 		}
 
+		f = c.Storage.Files[6]
+		if f.Path != "/foo" {
+			return fmt.Errorf("path, found %q", f.Path)
+		}
+
+		if *f.Overwrite != false {
+			return fmt.Errorf("overwrite, found %t", *f.Overwrite)
+		}
+
+		if string(*f.Contents.Source) != "data:text/plain;charset=utf-8;base64,Zm9v" {
+			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
+		}
+
+		if int(*f.Mode) != 420 {
+			return fmt.Errorf("mode, found %q", *f.Mode)
+		}
+
+		if *f.User.Name != "foo" {
+			return fmt.Errorf("user, found %q", *f.User.Name)
+		}
+
+		if *f.Group.Name != "foo" {
+			return fmt.Errorf("group, found %q", *f.Group.Name)
+		}
+
 		return nil
 	})
 }
@@ -223,4 +259,38 @@ func TestIgnitionFileInvalidPath(t *testing.T) {
 			files = [data.ignition_file.foo.rendered]
 		}
 	`, regexp.MustCompile("absolute"))
+}
+
+func TestIgnitionFileUIDUserConflict(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_file" "foo" {
+			path = "foo"
+			uid = 1000
+			user = "foo"
+			contents {
+				source = "foo"
+			}
+		}
+
+		data "ignition_config" "test" {
+			files = [data.ignition_file.foo.rendered]
+		}
+	`, regexp.MustCompile("Conflicting configuration arguments"))
+}
+
+func TestIgnitionFileGIDGroupConflict(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_file" "foo" {
+			path = "foo"
+			gid = 1000
+			group = "foo"
+			contents {
+				source = "foo"
+			}
+		}
+
+		data "ignition_config" "test" {
+			files = [data.ignition_file.foo.rendered]
+		}
+	`, regexp.MustCompile("Conflicting configuration arguments"))
 }

@@ -28,9 +28,22 @@ The following arguments are supported:
 
 * `mode` - (Optional) The directory's permission mode. Note that the mode must be properly specified as a decimal value, not octal (i.e. 0755 -> 493).
 
+* `user` - (Optional) The user name of the owner.
+
+  __Note__: `user` and `uid` are mutually exclusive.
+
 * `uid` - (Optional) The user ID of the owner.
 
+  __Note__: `uid` and `user` are mutually exclusive.
+
+* `group` - (Optional) The group name of the owner.
+
+  __Note__: `group` and `gid` are mutually exclusive.
+
 * `gid` - (Optional) The group ID of the owner.
+
+  __Note__: `gid` and `group` are mutually exclusive.
+
 
 ## Attributes Reference
 

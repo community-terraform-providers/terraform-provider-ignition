@@ -72,15 +72,29 @@ func dataSourceFile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"user": {
+				ConflictsWith: []string{"uid"},
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+			},
 			"uid": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				ForceNew: true,
+				ConflictsWith: []string{"user"},
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ForceNew:      true,
+			},
+			"group": {
+				ConflictsWith: []string{"gid"},
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
 			},
 			"gid": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				ForceNew: true,
+				ConflictsWith: []string{"group"},
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ForceNew:      true,
 			},
 			"rendered": {
 				Type:     schema.TypeString,
@@ -157,9 +171,19 @@ func buildFile(d *schema.ResourceData) (string, error) {
 		file.Mode = &imode
 	}
 
+	user := d.Get("user").(string)
+	if user != "" {
+		file.User = types.NodeUser{Name: &user}
+	}
+
 	uid := d.Get("uid").(int)
 	if uid != 0 {
 		file.User = types.NodeUser{ID: &uid}
+	}
+
+	group := d.Get("group").(string)
+	if group != "" {
+		file.Group = types.NodeGroup{Name: &group}
 	}
 
 	gid := d.Get("gid").(int)

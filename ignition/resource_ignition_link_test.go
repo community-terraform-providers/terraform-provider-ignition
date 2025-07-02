@@ -24,14 +24,22 @@ func TestIgnitionLink(t *testing.T) {
 			overwrite = true
 		}
 
+		data "ignition_link" "named_foo" {
+			path = "/foo"
+			target = "/bar"
+			user = "foo"
+			group = "foo"
+		}
+
 		data "ignition_config" "test" {
 			links = [
 				data.ignition_link.foo.rendered,
 				data.ignition_link.baz.rendered,
+				data.ignition_link.named_foo.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Links) != 2 {
+		if len(c.Storage.Links) != 3 {
 			return fmt.Errorf("arrays, found %d", len(c.Storage.Links))
 		}
 
@@ -73,6 +81,23 @@ func TestIgnitionLink(t *testing.T) {
 			return fmt.Errorf("overwrite, found %v", *f.Overwrite)
 		}
 
+		f = c.Storage.Links[2]
+		if f.Path != "/foo" {
+			return fmt.Errorf("path, found %q", f.Path)
+		}
+
+		if *f.Target != "/bar" {
+			return fmt.Errorf("target, found %q", *f.Target)
+		}
+
+		if *f.User.Name != "foo" {
+			return fmt.Errorf("user, found %q", *f.User.Name)
+		}
+
+		if *f.Group.Name != "foo" {
+			return fmt.Errorf("group, found %q", *f.Group.Name)
+		}
+
 		return nil
 	})
 }
@@ -88,4 +113,34 @@ func TestIgnitionLinkInvalidPath(t *testing.T) {
 			links = [data.ignition_link.foo.rendered]
 		}
 	`, regexp.MustCompile("absolute"))
+}
+
+func TestIgnitionLinkUIDUserConflict(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_link" "foo" {
+			path = "/foo"
+			target = "/bar"
+			uid = 1000
+			user = "foo"
+		}
+
+		data "ignition_config" "test" {
+			links = [data.ignition_link.foo.rendered]
+		}
+	`, regexp.MustCompile("Conflicting configuration arguments"))
+}
+
+func TestIgnitionLinkGIDGroupConflict(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_link" "foo" {
+			path = "/foo"
+			target = "/bar"
+			gid = 1000
+			group = "foo"
+		}
+
+		data "ignition_config" "test" {
+			links = [data.ignition_link.foo.rendered]
+		}
+	`, regexp.MustCompile("Conflicting configuration arguments"))
 }

@@ -22,14 +22,22 @@ func TestIgnitionDirectory(t *testing.T) {
 			overwrite = true
 		}
 
+		data "ignition_directory" "named_foo" {
+			path = "/foo"
+			mode = 420
+			user = "foo"
+			group = "foo"
+		}
+
 		data "ignition_config" "test" {
 			directories = [
 				data.ignition_directory.foo.rendered,
 				data.ignition_directory.bar.rendered,
+				data.ignition_directory.named_foo.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Directories) != 2 {
+		if len(c.Storage.Directories) != 3 {
 			return fmt.Errorf("arrays, found %d", len(c.Storage.Directories))
 		}
 
@@ -63,6 +71,27 @@ func TestIgnitionDirectory(t *testing.T) {
 			return fmt.Errorf("overwrite, found %t", *f.Overwrite)
 		}
 
+		f = c.Storage.Directories[2]
+		if f.Path != "/foo" {
+			return fmt.Errorf("path, found %q", f.Path)
+		}
+
+		if *f.Overwrite != false {
+			return fmt.Errorf("overwrite, found %t", *f.Overwrite)
+		}
+
+		if int(*f.Mode) != 420 {
+			return fmt.Errorf("mode, found %q", *f.Mode)
+		}
+
+		if *f.User.Name != "foo" {
+			return fmt.Errorf("user, found %q", *f.User.Name)
+		}
+
+		if *f.Group.Name != "foo" {
+			return fmt.Errorf("group, found %q", *f.Group.Name)
+		}
+
 		return nil
 	})
 }
@@ -91,4 +120,32 @@ func TestIgnitionDirectoryInvalidPath(t *testing.T) {
 			directories = [data.ignition_directory.foo.rendered]
 		}
 	`, regexp.MustCompile("path not absolute"))
+}
+
+func TestIgnitionDirectoryUIDUserConflict(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_directory" "foo" {
+			path = "foo"
+			uid = 1000
+			user = "foo"
+		}
+
+		data "ignition_config" "test" {
+			directories = [data.ignition_directory.foo.rendered]
+		}
+	`, regexp.MustCompile("Conflicting configuration arguments"))
+}
+
+func TestIgnitionDirectoryGIDGroupConflict(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_directory" "foo" {
+			path = "foo"
+			gid = 1000
+			group = "foo"
+		}
+
+		data "ignition_config" "test" {
+			directories = [data.ignition_directory.foo.rendered]
+		}
+	`, regexp.MustCompile("Conflicting configuration arguments"))
 }
