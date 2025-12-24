@@ -62,5 +62,5 @@ func handleReport(r report.Report) error {
 }
 
 func debug(format string, a ...interface{}) {
-	log.Printf("[DEBUG] %s", fmt.Sprintf(format, a...))
+	log.Printf("[DEBUG] "+format, a...)
 }
