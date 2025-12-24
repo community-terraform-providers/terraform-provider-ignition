@@ -28,6 +28,7 @@ The current Ignition Config Spec version supported by this provider is `3.4.0`. 
 * terraform-provider-ignition `>=2.3.4` - Ignition `2.18.0` / Config Spec Version `3.4.0`
 * terraform-provider-ignition `>=2.4.0` - Ignition `2.20.0` / Config Spec Version `3.4.0`
 * terraform-provider-ignition `>=2.5.0` - Ignition `2.20.0` / Config Spec Version `3.5.0`
+* terraform-provider-ignition `>=2.6.0` - Ignition `2.25.0` / Config Spec Version `3.5.0`
 
 ## Example Usage
 
