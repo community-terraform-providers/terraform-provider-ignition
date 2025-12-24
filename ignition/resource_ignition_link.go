@@ -89,7 +89,7 @@ func resourceLinkExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 func buildLink(d *schema.ResourceData) (string, error) {
 	link := &types.Link{}
 	link.Path = d.Get("path").(string)
-	if err := handleReport(link.Node.Validate(path.ContextPath{})); err != nil {
+	if err := handleReport(link.Validate(path.ContextPath{})); err != nil {
 		return "", err
 	}
 

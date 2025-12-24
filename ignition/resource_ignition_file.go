@@ -131,7 +131,7 @@ func buildFile(d *schema.ResourceData) (string, error) {
 		return "", fmt.Errorf("contents and source options are incompatible")
 	}
 
-	if !(hasContent || hasContents) && !hasSource {
+	if !hasContent && !hasContents && !hasSource {
 		return "", fmt.Errorf("contents or source options must be present")
 	}
 
