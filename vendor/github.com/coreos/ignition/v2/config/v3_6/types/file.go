@@ -22,28 +22,22 @@ import (
 	"github.com/coreos/vcontext/report"
 )
 
-func (c Clevis) IsPresent() bool {
-	return util.NotEmpty(c.Custom.Pin) ||
-		len(c.Tang) > 0 ||
-		util.IsTrue(c.Tpm2) ||
-		c.Threshold != nil && *c.Threshold != 0
+func (f File) Validate(c path.ContextPath) (r report.Report) {
+	r.Merge(f.Node.Validate(c))
+	r.AddOnError(c.Append("mode"), validateMode(f.Mode))
+	r.AddOnError(c.Append("overwrite"), f.validateOverwrite())
+	return
 }
 
-func (cu ClevisCustom) Validate(c path.ContextPath) (r report.Report) {
-	if util.NilOrEmpty(cu.Pin) && util.NilOrEmpty(cu.Config) && !util.IsTrue(cu.NeedsNetwork) {
-		return
+func (f File) validateOverwrite() error {
+	if util.IsTrue(f.Overwrite) && f.Contents.Source == nil {
+		return errors.ErrOverwriteAndNilSource
 	}
-	if util.NotEmpty(cu.Pin) {
-		switch *cu.Pin {
-		case "tpm2", "tang", "sss":
-		default:
-			r.AddOnError(c.Append("pin"), errors.ErrUnknownClevisPin)
-		}
-	} else {
-		r.AddOnError(c.Append("pin"), errors.ErrClevisPinRequired)
+	return nil
+}
+
+func (f FileEmbedded1) IgnoreDuplicates() map[string]struct{} {
+	return map[string]struct{}{
+		"Append": {},
 	}
-	if util.NilOrEmpty(cu.Config) {
-		r.AddOnError(c.Append("config"), errors.ErrClevisConfigRequired)
-	}
-	return
 }

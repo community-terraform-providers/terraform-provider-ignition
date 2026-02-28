@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/coreos/ignition/v2/config/v3_5/types"
+	"github.com/coreos/ignition/v2/config/v3_6/types"
 	"github.com/coreos/vcontext/path"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )

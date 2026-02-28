@@ -22,23 +22,22 @@ import (
 	"github.com/coreos/vcontext/report"
 )
 
-func (f File) Validate(c path.ContextPath) (r report.Report) {
-	r.Merge(f.Node.Validate(c))
-	r.AddOnError(c.Append("mode"), validateMode(f.Mode))
-	r.AddOnWarn(c.Append("mode"), validateModeSpecialBits(f.Mode))
-	r.AddOnError(c.Append("overwrite"), f.validateOverwrite())
+func (c Clevis) IsPresent() bool {
+	return util.NotEmpty(c.Custom.Pin) ||
+		len(c.Tang) > 0 ||
+		util.IsTrue(c.Tpm2) ||
+		c.Threshold != nil && *c.Threshold != 0
+}
+
+func (cu ClevisCustom) Validate(c path.ContextPath) (r report.Report) {
+	if util.NilOrEmpty(cu.Pin) && util.NilOrEmpty(cu.Config) && !util.IsTrue(cu.NeedsNetwork) {
+		return
+	}
+	if util.NilOrEmpty(cu.Pin) {
+		r.AddOnError(c.Append("pin"), errors.ErrClevisPinRequired)
+	}
+	if util.NilOrEmpty(cu.Config) {
+		r.AddOnError(c.Append("config"), errors.ErrClevisConfigRequired)
+	}
 	return
-}
-
-func (f File) validateOverwrite() error {
-	if util.IsTrue(f.Overwrite) && f.Contents.Source == nil {
-		return errors.ErrOverwriteAndNilSource
-	}
-	return nil
-}
-
-func (f FileEmbedded1) IgnoreDuplicates() map[string]struct{} {
-	return map[string]struct{}{
-		"Append": {},
-	}
 }
