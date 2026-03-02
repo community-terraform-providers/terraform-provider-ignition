@@ -1,5 +1,5 @@
-# github.com/ProtonMail/go-crypto v1.1.6
-## explicit; go 1.17
+# github.com/ProtonMail/go-crypto v1.3.0
+## explicit; go 1.22.0
 github.com/ProtonMail/go-crypto/bitcurves
 github.com/ProtonMail/go-crypto/brainpool
 github.com/ProtonMail/go-crypto/eax
@@ -115,8 +115,8 @@ github.com/hashicorp/go-plugin/internal/cmdrunner
 github.com/hashicorp/go-plugin/internal/grpcmux
 github.com/hashicorp/go-plugin/internal/plugin
 github.com/hashicorp/go-plugin/runner
-# github.com/hashicorp/go-retryablehttp v0.7.7
-## explicit; go 1.19
+# github.com/hashicorp/go-retryablehttp v0.7.8
+## explicit; go 1.23
 github.com/hashicorp/go-retryablehttp
 # github.com/hashicorp/go-uuid v1.0.3
 ## explicit
@@ -124,8 +124,8 @@ github.com/hashicorp/go-uuid
 # github.com/hashicorp/go-version v1.8.0
 ## explicit
 github.com/hashicorp/go-version
-# github.com/hashicorp/hc-install v0.9.2
-## explicit; go 1.23.0
+# github.com/hashicorp/hc-install v0.9.3
+## explicit; go 1.24.0
 github.com/hashicorp/hc-install
 github.com/hashicorp/hc-install/checkpoint
 github.com/hashicorp/hc-install/errors
@@ -148,14 +148,14 @@ github.com/hashicorp/hcl/v2/hclsyntax
 # github.com/hashicorp/logutils v1.0.0
 ## explicit
 github.com/hashicorp/logutils
-# github.com/hashicorp/terraform-exec v0.24.0
-## explicit; go 1.23.0
+# github.com/hashicorp/terraform-exec v0.25.0
+## explicit; go 1.24.0
 github.com/hashicorp/terraform-exec/internal/version
 github.com/hashicorp/terraform-exec/tfexec
 # github.com/hashicorp/terraform-json v0.27.2
 ## explicit; go 1.21
 github.com/hashicorp/terraform-json
-# github.com/hashicorp/terraform-plugin-go v0.29.0
+# github.com/hashicorp/terraform-plugin-go v0.30.0
 ## explicit; go 1.24.0
 github.com/hashicorp/terraform-plugin-go/internal/logging
 github.com/hashicorp/terraform-plugin-go/tfprotov5
@@ -182,7 +182,7 @@ github.com/hashicorp/terraform-plugin-log/internal/hclogutils
 github.com/hashicorp/terraform-plugin-log/internal/logging
 github.com/hashicorp/terraform-plugin-log/tflog
 github.com/hashicorp/terraform-plugin-log/tfsdklog
-# github.com/hashicorp/terraform-plugin-sdk/v2 v2.38.2
+# github.com/hashicorp/terraform-plugin-sdk/v2 v2.39.0
 ## explicit; go 1.24.0
 github.com/hashicorp/terraform-plugin-sdk/v2/diag
 github.com/hashicorp/terraform-plugin-sdk/v2/helper/id
@@ -275,7 +275,7 @@ github.com/zclconf/go-cty/cty/function/stdlib
 github.com/zclconf/go-cty/cty/gocty
 github.com/zclconf/go-cty/cty/json
 github.com/zclconf/go-cty/cty/set
-# golang.org/x/crypto v0.47.0
+# golang.org/x/crypto v0.48.0
 ## explicit; go 1.24.0
 golang.org/x/crypto/argon2
 golang.org/x/crypto/blake2b
@@ -284,7 +284,7 @@ golang.org/x/crypto/cryptobyte
 golang.org/x/crypto/cryptobyte/asn1
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/sha3
-# golang.org/x/mod v0.31.0
+# golang.org/x/mod v0.33.0
 ## explicit; go 1.24.0
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
@@ -302,18 +302,18 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.19.0
 ## explicit; go 1.24.0
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.40.0
+# golang.org/x/sys v0.41.0
 ## explicit; go 1.24.0
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.33.0
+# golang.org/x/text v0.34.0
 ## explicit; go 1.24.0
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/tools v0.40.0
+# golang.org/x/tools v0.41.0
 ## explicit; go 1.24.0
 golang.org/x/tools/cmd/stringer
 golang.org/x/tools/go/analysis
@@ -352,7 +352,7 @@ google.golang.org/appengine/internal/remote_api
 # google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b
 ## explicit; go 1.24.0
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.78.0
+# google.golang.org/grpc v1.79.1
 ## explicit; go 1.24.0
 google.golang.org/grpc
 google.golang.org/grpc/attributes
@@ -381,6 +381,7 @@ google.golang.org/grpc/health/grpc_health_v1
 google.golang.org/grpc/internal
 google.golang.org/grpc/internal/backoff
 google.golang.org/grpc/internal/balancer/gracefulswitch
+google.golang.org/grpc/internal/balancer/weight
 google.golang.org/grpc/internal/balancerload
 google.golang.org/grpc/internal/binarylog
 google.golang.org/grpc/internal/buffer
