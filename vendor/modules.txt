@@ -211,7 +211,7 @@ github.com/hashicorp/terraform-svchost
 # github.com/hashicorp/yamux v0.1.2
 ## explicit; go 1.20
 github.com/hashicorp/yamux
-# github.com/kisielk/errcheck v1.9.0
+# github.com/kisielk/errcheck v1.10.0
 ## explicit; go 1.22.0
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/errcheck

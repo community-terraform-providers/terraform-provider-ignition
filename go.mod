@@ -8,7 +8,7 @@ require (
 	github.com/coreos/ignition/v2 v2.26.0
 	github.com/coreos/vcontext v0.0.0-20231102161604-685dc7299dc5
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.39.0
-	github.com/kisielk/errcheck v1.9.0
+	github.com/kisielk/errcheck v1.10.0
 	github.com/mitchellh/gox v1.0.1
 	github.com/pkg/errors v0.9.1
 )
